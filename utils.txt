@@ -99,6 +99,7 @@ window.setByIndex = function(obj) {
 window.byPath = function(obj, path) {
   if(!obj) return
 
+try {
   path = path.split(".");
 
   let res = obj;
@@ -122,6 +123,8 @@ window.byPath = function(obj, path) {
     }
   }
   return res;
+} catch(e){}
+return null;
 }
 
 window.setByPath = function(obj, path, value) {
