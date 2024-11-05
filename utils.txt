@@ -161,7 +161,12 @@ let _unique = _parents[devanilla(c)];
   }
   return res;
 }
-
+window.copyItem = function(item, item2) {
+let values = Object.values(item);
+values.forEach((value, index) => {
+setByIndex(item, index, byIndex(item2, index));
+})
+}
 window.byProto = (obj) => {
   let proto = obj?.__proto__;
   if(!proto) return null;
