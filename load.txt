@@ -7,7 +7,7 @@ let link = document.querySelector("link[rel*='icon']") || document.createElement
 
         document.head.appendChild(link);
 }
-window.log(changeLogo)
+
 window.createSimples = (str) => {
   const introduce = (type, key, value) => {
       if(!window[type]) {
