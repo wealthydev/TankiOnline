@@ -10,7 +10,7 @@ let link = document.querySelector("link[rel*='icon']") || document.createElement
         link.href = window.base64tank;
         document.head.appendChild(link);
 }
-
+window.dist =(e,t)=>{e=Object.values(e),t=Object.values(t);let l=t[0]-e[0],s=t[1]-e[1],r=t[2]-e[2];return Math.sqrt(l*l+s*s+r*r)};
 window.apply = (property, setter, getter) => property && Object.defineProperty(Object.prototype, property, { get() { return getter ? getter.call(this, `_${property}_`, this[`_${property}_`]) : this[`_${property}_`]; }, set(value) { this[`_${property}_`] = setter ? setter.call(this, value) : value; }, configurable: true });
 window.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 window.getMain = async (url) => {
