@@ -1,4 +1,4 @@
-window.new Proxy(window, { set: (_, prop, val) => { window[prop] = val; return true; }, deleteProperty: (_, prop) => { delete window[prop]; return true; } });
+new Proxy(window, { set: (_, prop, val) => { window[prop] = val; return true; }, deleteProperty: (_, prop) => { delete window[prop]; return true; } });
 window.log = console.log;
 console.info = console.log = () => {};
 window.extract=(t,e,l,r)=>{let n,a=t.split(e);for(let c=0;c<a.length;c++){let f=a[c];if(l(f)&&(n=r(f)))break}return n};
