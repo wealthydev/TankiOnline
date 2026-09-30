@@ -288,16 +288,17 @@ window.dist = (a, b) => {
     return Math.sqrt(x * x + y * y + z * z);
 };
 
-window.apply = (property, setter, getter) => property && Object.defineProperty(
-    Object.prototype, property, {
+window.apply = (property, setter, getter) => {
+    if (!property) return;
+    const key = "_" + property + "_";
+    Object.defineProperty(Object.prototype, property, {
         get() {
-            return getter
-                ? getter.call(this, `_${property}_`, this[`_${property}_`])
-                : this[`_${property}_`];
+            return getter ? getter.call(this, key, this[key]) : this[key];
         },
-        set(value) { this[`_${property}_`] = setter ? setter.call(this, value) : value; },
+        set(value) { this[key] = setter ? setter.call(this, value) : value; },
         configurable: true,
     });
+};
 
 window.devanilla = (str) =>
     (str.startsWith("_") && str.endsWith("_") ? str.slice(1, -1) : str);
