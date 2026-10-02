@@ -1,4 +1,4 @@
-window.KERNEL = { version: 2, major: 2, minor: 0 };
+window.KERNEL = { version: 3, major: 3, minor: 0 };
 
 window.log = console.log.bind(console);
 console.info = console.log = () => {};
@@ -299,6 +299,72 @@ window.apply = (property, setter, getter) => {
         configurable: true,
     });
 };
+
+window.Site = (() => {
+    const quoted = (s, i) => {
+        const q = s[i];
+        for (i++; i < s.length; i++) {
+            if (s[i] === "\\") { i++; continue; }
+            if (s[i] === q) return i + 1;
+        }
+        return i;
+    };
+
+    const value = (s, i) => {
+        let d = 0, q = 0;
+        while (i < s.length) {
+            const c = s[i];
+            if (c === '"' || c === "'" || c === "`") { i = quoted(s, i); continue; }
+            if (c === "(" || c === "[" || c === "{") d++;
+            else if (c === ")" || c === "]" || c === "}") { if (!d) return i; d--; }
+            else if ((c === "," || c === ";") && !d) return i;
+            else if (c === "?" && !d) {
+                const n = s[i + 1];
+                if (n === "." || n === "?") { i += 2; continue; }
+                q++;
+            } else if (c === ":" && !d) {
+                if (!q) return i;
+                q--;
+            }
+            i++;
+        }
+        return i;
+    };
+
+    const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const writes = (s, prop) => {
+        if (!prop) return [];
+        const re = new RegExp("this\\." + esc(prop) + "\\s*=(?!=)", "g");
+        const out = [];
+        let m;
+        while ((m = re.exec(s))) {
+            const vs = m.index + m[0].length;
+            out.push({ at: m.index, vs, ve: value(s, vs) });
+        }
+        return out;
+    };
+
+    const only = (s, prop) => {
+        const w = writes(s, prop);
+        return w.length === 1 ? w[0] : null;
+    };
+
+    const together = (s, props, span) => {
+        const found = [];
+        for (const p of props) {
+            const w = only(s, p);
+            if (!w) return null;
+            found.push(w);
+        }
+        if (!found.length) return null;
+        const lo = Math.min(...found.map((w) => w.at));
+        const hi = Math.max(...found.map((w) => w.ve));
+        return hi - lo <= (span || 400) ? { lo, hi } : null;
+    };
+
+    return { value, writes, only, together, esc };
+})();
 
 window.devanilla = (str) =>
     (str.startsWith("_") && str.endsWith("_") ? str.slice(1, -1) : str);
